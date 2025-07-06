@@ -1,5 +1,6 @@
 package just.somebody.templates
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,24 +11,36 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.dataStore
 import just.somebody.templates.presentation.MainViewModel
 import just.somebody.templates.presentation.viewModelFactory
 import just.somebody.templates.ui.theme.TemplateTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
+import just.somebody.templates.data.AppSettings
+import just.somebody.templates.depInj.AppSettingsSerializer
 
 class MainActivity : ComponentActivity()
 {
+
   override fun onCreate(savedInstanceState: Bundle?)
   {
     super.onCreate(savedInstanceState)
     App().onCreate()
     enableEdgeToEdge()
     setContent {
+
       TemplateTheme {
         val viewModel = viewModel<MainViewModel>(
-          factory = viewModelFactory { MainViewModel(App.appModule.repo) }
+          factory = viewModelFactory ()
+          { MainViewModel(
+            App.appModule.repo,
+            App.appModule.settingsManager)
+          }
         )
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
           Greeting(
