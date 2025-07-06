@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import just.somebody.templates.data.AppSettings
 import just.somebody.templates.depInj.SettingsManager
 import just.somebody.templates.domain.Repository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -15,7 +18,7 @@ class MainViewModel(
   private val SETTINGS_MANAGER : SettingsManager
 ) : ViewModel()
 {
-  val appSettings : StateFlow<AppSettings> = SETTINGS_MANAGER.settingsFlow.stateIn(
+  private val appSettings : StateFlow<AppSettings> = SETTINGS_MANAGER.settingsFlow.stateIn(
     viewModelScope,
     SharingStarted.Lazily,
     AppSettings()
@@ -34,4 +37,6 @@ class MainViewModel(
       SETTINGS_MANAGER.updateSettings(current.copy(something = SOMETHING))
     }
   }
+
+
 }

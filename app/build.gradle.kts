@@ -52,6 +52,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.kotlinx.collections.immutable)
   implementation(libs.kotlinx.serialization.json.v132)
+  implementation(libs.androidx.core.splashscreen)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
