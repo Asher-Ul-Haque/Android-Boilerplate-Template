@@ -1,7 +1,6 @@
 package just.somebody.templates
 
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.OvershootInterpolator
@@ -9,28 +8,36 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.datastore.dataStore
-import just.somebody.templates.presentation.MainViewModel
-import just.somebody.templates.presentation.viewModelFactory
-import just.somebody.templates.ui.theme.TemplateTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-import just.somebody.templates.data.AppSettings
-import just.somebody.templates.depInj.AppSettingsSerializer
-import just.somebody.templates.presentation.SplashViewModel
-import kotlinx.coroutines.delay
+import just.somebody.templates.ui.theme.TemplateTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import just.somebody.templates.presentation.ObserveAsEvents
+import just.somebody.templates.presentation.screens.Destination
+import just.somebody.templates.presentation.SnackbarController
+import just.somebody.templates.presentation.screens.NavigationAction
+import just.somebody.templates.presentation.screens.ScreenA
+import just.somebody.templates.presentation.viewModels.MainViewModel
+import just.somebody.templates.presentation.viewModels.ScreenAViewModel
+import just.somebody.templates.presentation.viewModels.SplashViewModel
+import just.somebody.templates.presentation.viewModels.viewModelFactory
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity()
 {
@@ -72,9 +79,10 @@ class MainActivity : ComponentActivity()
     }
 
     enableEdgeToEdge()
-    setContent {
-
-      TemplateTheme {
+    setContent ()
+    {
+      TemplateTheme ()
+      {
         val viewModel = viewModel<MainViewModel>(
           factory = viewModelFactory ()
           { MainViewModel(
@@ -82,33 +90,100 @@ class MainActivity : ComponentActivity()
             App.appModule.settingsManager)
           }
         )
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          Greeting(
-            name = "Android",
-            modifier = Modifier.padding(innerPadding)
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope             = rememberCoroutineScope()
+        ObserveAsEvents(
+          FLOW = SnackbarController.events,
+          KEY  = snackbarHostState)
+        { event ->
+          scope.launch ()
+          {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            val result = snackbarHostState.showSnackbar(
+              message     = event.message,
+              actionLabel = event.action?.name,
+              duration    = event.duration
+            )
+
+            if (result == SnackbarResult.ActionPerformed)  event.action?.action?.invoke()
+          }
+        }
+        Scaffold(
+          modifier      = Modifier.fillMaxSize(),
+          snackbarHost  = { SnackbarHost(snackbarHostState) }
+        )
+        { innerPadding ->
+          val navController = rememberNavController()
+          val navigator     = App.appModule.navigator
+          ObserveAsEvents(navigator.navigationAction)
+          { action ->
+            when(action)
+            {
+              is NavigationAction.Navigate          ->
+                navController.navigate(action.DESTINATION)  {action.OPTIONS(this) }
+              is NavigationAction.PopBackStack      ->
+                {
+                  if (action.DESTINATION != null) navController.popBackStack(action.DESTINATION, action.INCLUSIVE)
+                  else                            navController.popBackStack()
+                }
+              is NavigationAction.ClearBackStack    ->
+                {
+                  navController.navigate(action.DESTINATION)
+                  {
+                    popUpTo(0) { inclusive = true}
+                    launchSingleTop = true
+                  }
+                }
+              is NavigationAction.NavigateSingleTop ->
+                {
+                  navController.navigate(action.DESTINATION) { launchSingleTop = true }
+                }
+              is NavigationAction.PopUpTo           ->
+                {
+                  navController.navigate(action.DESTINATION)
+                  {
+                    popUpTo(action.DESTINATION) { inclusive = action.INCLUSIVE}
+                    launchSingleTop = true
+                  }
+                }
+              is NavigationAction.Replace           ->
+              {
+                navController.popBackStack()
+                navController.navigate(action.DESTINATION)
+              }
+              NavigationAction.NavigateBack         -> navController.navigateUp()
+            }
+          }
+
+          NavHost(
+            navController     = navController,
+            startDestination  = navigator.startDestination,
+            modifier          = Modifier.padding(innerPadding)
           )
-          Button(onClick = {viewModel.doSomething()})
-          { Text(text = "Login") }
+          {
+            composable<Destination.ScreenA>
+            {
+              ScreenA(
+                VIEW_MODEL = viewModel<ScreenAViewModel>(factory = viewModelFactory()
+                  { ScreenAViewModel(App.appModule.navigator) }),
+              )
+            }
+            composable<Destination.ScreenB>
+            {
+              Box(
+                modifier         = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+              )
+              { Text("Screen B") }
+            }
+            composable<Destination.ArgScreen>
+            {
+              val args = it.toRoute<Destination.ArgScreen>()
+              Text("ID: ${args.ID}")
+            }
+          }
         }
       }
     }
-  }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier)
-{
-  Text(
-    text = "Hello $name!",
-    modifier = modifier
-  )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview()
-{
-  TemplateTheme {
-    Greeting("Android")
   }
 }

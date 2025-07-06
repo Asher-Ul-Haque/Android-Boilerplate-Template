@@ -1,4 +1,4 @@
-package just.somebody.templates.presentation
+package just.somebody.templates.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
