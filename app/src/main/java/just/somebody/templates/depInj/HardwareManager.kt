@@ -1,11 +1,13 @@
 package just.somebody.templates.depInj
 
+import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
 import androidx.core.content.getSystemService
+import just.somebody.templates.App
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -70,7 +72,9 @@ class DefaultHardwareManager(
           }
         }
 
-        connectivityManager?.registerDefaultNetworkCallback(callback)
+        if (!App.appModule.permissionManager.hasPermission(CONTEXT, Manifest.permission.ACCESS_NETWORK_STATE) ||
+          connectivityManager == null) trySend(NetworkStatus.Unavailable)
+        else connectivityManager.registerDefaultNetworkCallback(callback)
 
         awaitClose { connectivityManager?.unregisterNetworkCallback(callback) }
       }
