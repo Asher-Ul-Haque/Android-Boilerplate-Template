@@ -1,9 +1,7 @@
-package just.somebody.templates.depInj
+package just.somebody.templates.appModule.storage.dataStore
 
 import androidx.datastore.core.Serializer
-import just.somebody.templates.data.AppSettings
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream

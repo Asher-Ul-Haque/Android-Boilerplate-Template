@@ -1,13 +1,10 @@
-package just.somebody.templates.depInj
+package just.somebody.templates.appModule.storage.dataStore
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
-import just.somebody.templates.data.AppSettings
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
-class SettingsManager(private val DATASTORE : DataStore<AppSettings>)
+class DataStoreManager(private val DATASTORE : DataStore<AppSettings>)
 {
   val settingsFlow : Flow<AppSettings> = DATASTORE.data
 
@@ -23,7 +20,6 @@ class SettingsManager(private val DATASTORE : DataStore<AppSettings>)
   suspend fun clearSettings()
   { DATASTORE.updateData { AppSettings() } }
 
-  @Composable
-  fun getSettings() : AppSettings
-  { return DATASTORE.data.collectAsState(AppSettings()).value }
+  suspend fun getSettings() : AppSettings
+  { return settingsFlow.first() }
 }

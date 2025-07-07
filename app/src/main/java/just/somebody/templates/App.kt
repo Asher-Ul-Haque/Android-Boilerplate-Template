@@ -1,9 +1,8 @@
 package just.somebody.templates
 
-import android.app.Activity
 import android.app.Application
-import just.somebody.templates.depInj.AppModule
-import just.somebody.templates.depInj.AppModuleInterface
+import just.somebody.templates.appModule.AppModule
+import just.somebody.templates.appModule.AppModuleInterface
 
 class App() : Application()
 {

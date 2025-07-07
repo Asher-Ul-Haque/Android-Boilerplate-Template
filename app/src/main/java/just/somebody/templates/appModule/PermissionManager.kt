@@ -1,4 +1,4 @@
-package just.somebody.templates.depInj
+package just.somebody.templates.appModule
 
 import android.app.Activity
 import android.content.Context
