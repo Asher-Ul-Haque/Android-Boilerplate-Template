@@ -27,6 +27,7 @@ interface AppModuleInterface
   val navigator         : Navigator
   val settingsManager   : SettingsManager
   val permissionManager : PermissionManager
+  val hardwareManager   : HardwareManager
   val context           : Context
 }
 
@@ -38,6 +39,7 @@ class AppModule(
   override val repo              : Repository        by lazy { RepositoryImpl(this.api);}
   override val navigator         : Navigator         by lazy { DefaultNavigator(startDestination = Destination.ScreenA) }
   override val settingsManager   : SettingsManager   by lazy { SettingsManager(appSettingsDataStore) }
+  override val hardwareManager   : HardwareManager   by lazy { DefaultHardwareManager(APP_CONTEXT) }
   override val permissionManager : PermissionManager by lazy { DefaultPermissionManager() }
 
   private val appSettingsDataStore : DataStore<AppSettings> by lazy ()

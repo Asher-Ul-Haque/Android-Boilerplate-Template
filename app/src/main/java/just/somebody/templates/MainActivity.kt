@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity()
   override fun onCreate(savedInstanceState: Bundle?)
   {
     super.onCreate(savedInstanceState)
-    App().onCreate()
 
     val splashViewModel by viewModels<SplashViewModel>()
 
