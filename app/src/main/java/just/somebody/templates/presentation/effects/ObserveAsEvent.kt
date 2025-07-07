@@ -1,4 +1,4 @@
-package just.somebody.templates.presentation
+package just.somebody.templates.presentation.effects
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

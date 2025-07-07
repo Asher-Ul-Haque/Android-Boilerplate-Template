@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import just.somebody.templates.appModule.network.NetworkService
 import just.somebody.templates.appModule.storage.dataStore.AppSettings
 import just.somebody.templates.appModule.storage.dataStore.AppSettingsSerializer
 import just.somebody.templates.appModule.storage.dataStore.DataStoreManager
@@ -38,6 +39,7 @@ interface AppModuleInterface
   val externalStorageManager : ExternalStorageManager
   val context                : Context
   val database               : ExampleDatabase
+  val networkService         : NetworkService
 }
 
 class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
@@ -51,6 +53,7 @@ class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
   override val dataStoreManager       : DataStoreManager        by lazy { DataStoreManager(appSettingsDataStore) }
   override val internalStorageManager : InternalStorageManager  by lazy { DefaultInternalStorageManager(APP_CONTEXT) }
   override val externalStorageManager : ExternalStorageManager  by lazy { DefaultExternalStorageManager(APP_CONTEXT, dataStoreManager) }
+  override val networkService         : NetworkService          by lazy { NetworkService() }
   override val database               : ExampleDatabase         by lazy { DatabaseFactory(APP_CONTEXT).create().build() }
 
   private val appSettingsDataStore : DataStore<AppSettings> by lazy ()

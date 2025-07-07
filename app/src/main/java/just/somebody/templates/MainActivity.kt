@@ -28,12 +28,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import just.somebody.templates.presentation.ObserveAsEvents
+import just.somebody.templates.presentation.effects.ObserveAsEvents
 import just.somebody.templates.presentation.screens.Destination
-import just.somebody.templates.presentation.SnackbarController
+import just.somebody.templates.presentation.effects.SnackbarController
+import just.somebody.templates.presentation.effects.SoundController
 import just.somebody.templates.presentation.screens.NavigationAction
 import just.somebody.templates.presentation.screens.ScreenA
-import just.somebody.templates.presentation.viewModels.MainViewModel
 import just.somebody.templates.presentation.viewModels.ScreenAViewModel
 import just.somebody.templates.presentation.viewModels.SplashViewModel
 import just.somebody.templates.presentation.viewModels.viewModelFactory
@@ -82,14 +82,13 @@ class MainActivity : ComponentActivity()
     {
       TemplateTheme ()
       {
-
         val snackbarHostState = remember { SnackbarHostState() }
-        val scope             = rememberCoroutineScope()
+        val snackbarScope     = rememberCoroutineScope()
         ObserveAsEvents(
           FLOW = SnackbarController.events,
           KEY  = snackbarHostState)
         { event ->
-          scope.launch ()
+          snackbarScope.launch ()
           {
             snackbarHostState.currentSnackbarData?.dismiss()
             val result = snackbarHostState.showSnackbar(
@@ -101,6 +100,19 @@ class MainActivity : ComponentActivity()
             if (result == SnackbarResult.ActionPerformed)  event.action?.action?.invoke()
           }
         }
+
+        val soundEffectState  = remember { SnackbarHostState() }
+        val soundScope             = rememberCoroutineScope()
+        ObserveAsEvents(FLOW = SoundController.effects)
+        { event ->
+          soundScope.launch ()
+          {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            SoundController.play(event)
+          }
+        }
+
+
         Scaffold(
           modifier      = Modifier.fillMaxSize(),
           snackbarHost  = { SnackbarHost(snackbarHostState) }

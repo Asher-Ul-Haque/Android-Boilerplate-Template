@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import just.somebody.templates.App
-import just.somebody.templates.presentation.SnackbarController
-import just.somebody.templates.presentation.SnackbarEvent
+import just.somebody.templates.presentation.effects.SnackbarController
+import just.somebody.templates.presentation.effects.SnackbarEvent
 import just.somebody.templates.presentation.viewModels.ScreenAViewModel
 import kotlinx.coroutines.launch
 

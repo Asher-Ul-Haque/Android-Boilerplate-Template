@@ -1,4 +1,4 @@
-package just.somebody.templates.presentation
+package just.somebody.templates.presentation.effects
 
 import androidx.compose.material3.SnackbarDuration
 import kotlinx.coroutines.channels.Channel
