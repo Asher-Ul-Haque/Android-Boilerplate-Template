@@ -2,7 +2,7 @@ package just.somebody.templates.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import just.somebody.templates.data.AppSettings
+import just.somebody.templates.appModule.storage.dataStore.AppSettings
 import just.somebody.templates.appModule.storage.dataStore.DataStoreManager
 import just.somebody.templates.domain.Repository
 import kotlinx.coroutines.flow.SharingStarted
