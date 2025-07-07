@@ -1,5 +1,6 @@
 package just.somebody.templates.depInj
 
+import android.app.Activity
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
@@ -21,18 +22,23 @@ import kotlinx.coroutines.SupervisorJob
 // - - - add the necessary components from data and domain
 interface AppModuleInterface
 {
-  val api             : Api
-  val repo            : Repository
-  val navigator       : Navigator
-  val settingsManager : SettingsManager
+  val api               : Api
+  val repo              : Repository
+  val navigator         : Navigator
+  val settingsManager   : SettingsManager
+  val permissionManager : PermissionManager
+  val context           : Context
 }
 
-class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
+class AppModule(
+  private val APP_CONTEXT : Context) : AppModuleInterface
 {
-  override val api             : Api             by lazy { ApiImpl(); }
-  override val repo            : Repository      by lazy { RepositoryImpl(this.api);}
-  override val navigator       : Navigator       by lazy { DefaultNavigator(startDestination = Destination.ScreenA) }
-  override val settingsManager : SettingsManager by lazy { SettingsManager(appSettingsDataStore) }
+  override val context           : Context           by lazy { APP_CONTEXT }
+  override val api               : Api               by lazy { ApiImpl(); }
+  override val repo              : Repository        by lazy { RepositoryImpl(this.api);}
+  override val navigator         : Navigator         by lazy { DefaultNavigator(startDestination = Destination.ScreenA) }
+  override val settingsManager   : SettingsManager   by lazy { SettingsManager(appSettingsDataStore) }
+  override val permissionManager : PermissionManager by lazy { DefaultPermissionManager() }
 
   private val appSettingsDataStore : DataStore<AppSettings> by lazy ()
   {
@@ -41,5 +47,4 @@ class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
       scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     ) { APP_CONTEXT.dataStoreFile("app-settings.json") }
   }
-
 }

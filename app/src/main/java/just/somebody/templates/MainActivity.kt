@@ -83,13 +83,7 @@ class MainActivity : ComponentActivity()
     {
       TemplateTheme ()
       {
-        val viewModel = viewModel<MainViewModel>(
-          factory = viewModelFactory ()
-          { MainViewModel(
-            App.appModule.repo,
-            App.appModule.settingsManager)
-          }
-        )
+
         val snackbarHostState = remember { SnackbarHostState() }
         val scope             = rememberCoroutineScope()
         ObserveAsEvents(

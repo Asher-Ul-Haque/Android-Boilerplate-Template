@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import just.somebody.templates.App
 import just.somebody.templates.presentation.SnackbarController
 import just.somebody.templates.presentation.SnackbarEvent
 import just.somebody.templates.presentation.viewModels.ScreenAViewModel
-import just.somebody.templates.presentation.viewModels.viewModelFactory
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,5 +51,17 @@ fun ScreenA(
 
     Button(onClick = { VIEW_MODEL.showSnackbar() })
     { Text("Show Snackbar from viewModel") }
+
+    val askPermission = remember { mutableStateOf(false) }
+    Button(onClick = { askPermission.value = true})
+    { Text("Ask Camera permission") }
+
+    App.appModule.permissionManager.RequestPermissionIfNeeded(
+      PERMISSION      = android.Manifest.permission.CAMERA,
+      ON_GRANT         = { /* success */ },
+      TRIGGER         = askPermission.value,
+      ON_TRIGGER       = { askPermission.value = !askPermission.value },
+      GO_TO_SETTINGS = true,
+    )
   }
 }
