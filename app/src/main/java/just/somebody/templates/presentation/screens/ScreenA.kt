@@ -1,5 +1,9 @@
 package just.somebody.templates.presentation.screens
 
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,7 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import just.somebody.templates.App
+import just.somebody.templates.R
 import just.somebody.templates.appModule.ForgeLogger
 import just.somebody.templates.appModule.storage.ExternalStorageManager
 import just.somebody.templates.presentation.effects.SnackbarController
@@ -152,16 +160,33 @@ fun ScreenA(
       ForgeLogger.trace("Playing click sound")
       scope.launch { SoundController.playSound(SoundEffect.Click) }
     }) {
-      Text("Ask Camera Permission")
+      Text("Ask Notification Permission")
     }
 
-    App.appModule.permissionManager.RequestPermissionIfNeeded(
-      PERMISSION = android.Manifest.permission.CAMERA,
-      ON_GRANT = { /* Handle permission granted */ },
-      TRIGGER = askPermission.value,
-      ON_TRIGGER = { askPermission.value = !askPermission.value },
-      GO_TO_SETTINGS = true
-    )
+    if (Build.VERSION.SDK_INT >= 33)
+    {
+      App.appModule.permissionManager.RequestPermissionIfNeeded(
+        PERMISSION = android.Manifest.permission.POST_NOTIFICATIONS,
+        ON_GRANT = { /* Handle permission granted */ },
+        TRIGGER = askPermission.value,
+        ON_TRIGGER = { askPermission.value = !askPermission.value },
+        GO_TO_SETTINGS = true
+      )
+    }
+
+    Button(onClick =
+    {
+      if (Build.VERSION.SDK_INT >= 33 && !App.appModule.permissionManager.hasPermission(App.appModule.context, Manifest.permission.POST_NOTIFICATIONS))
+      { return@Button }
+      val notificationManager = App.appModule.context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+      val notification = NotificationCompat.Builder(App.appModule.context, "channel_ID")
+        .setContentText("This is some content text")
+        .setContentTitle("Hello WOrld!")
+        .setSmallIcon(R.drawable.logo)
+        .build()
+      notificationManager.notify(1, notification)
+    })
+    { Text("Show notification") }
 
     // Connectivity status
     Text("Is Connected: $isConnected")
