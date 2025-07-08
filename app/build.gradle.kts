@@ -17,6 +17,11 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    externalNativeBuild {
+      cmake {
+        cppFlags += ""
+      }
+    }
   }
 
   buildTypes {
@@ -34,6 +39,12 @@ android {
   }
   buildFeatures {
     compose = true
+  }
+  externalNativeBuild {
+    cmake {
+      path = file("src/main/cpp/CMakeLists.txt")
+      version = "3.22.1"
+    }
   }
 }
 
@@ -61,7 +72,6 @@ dependencies {
   implementation(libs.ktor.client.core)
   implementation(libs.ktor.client.cio)
   implementation(libs.ktor.client.logging)
-  implementation(libs.ktor.client.timeout)
   implementation(libs.ktor.client.content.negotiation)
   implementation(libs.ktor.serialization.kotlinx.json)
   testImplementation(libs.junit)

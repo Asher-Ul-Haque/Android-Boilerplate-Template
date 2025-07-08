@@ -10,11 +10,7 @@ class DataStoreManager(private val DATASTORE : DataStore<AppSettings>)
 
   suspend fun updateSettings(NEW_SETTINGS : AppSettings)
   {
-    DATASTORE.updateData ()
-    { it.copy(
-      something   = NEW_SETTINGS.something,
-      otherThings = NEW_SETTINGS.otherThings)
-    }
+    DATASTORE.updateData () { NEW_SETTINGS }
   }
 
   suspend fun clearSettings()

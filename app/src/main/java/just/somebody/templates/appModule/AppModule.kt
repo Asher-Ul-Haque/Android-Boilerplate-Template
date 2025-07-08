@@ -1,16 +1,18 @@
 package just.somebody.templates.appModule
 
-import DefaultExternalStorageManager
-import ExternalStorageManager
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import just.somebody.templates.appModule.nativeBridge.NativeBridge
 import just.somebody.templates.appModule.network.NetworkService
+import just.somebody.templates.appModule.storage.DefaultExternalStorageManager
 import just.somebody.templates.appModule.storage.dataStore.AppSettings
 import just.somebody.templates.appModule.storage.dataStore.AppSettingsSerializer
 import just.somebody.templates.appModule.storage.dataStore.DataStoreManager
 import just.somebody.templates.appModule.storage.DefaultInternalStorageManager
+import just.somebody.templates.appModule.storage.ExternalStorageManager
 import just.somebody.templates.appModule.storage.InternalStorageManager
 import just.somebody.templates.appModule.storage.database.DatabaseFactory
 import just.somebody.templates.appModule.storage.database.ExampleDatabase
@@ -40,6 +42,7 @@ interface AppModuleInterface
   val context                : Context
   val database               : ExampleDatabase
   val networkService         : NetworkService
+  val nativeBridge           : NativeBridge
 }
 
 class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
@@ -55,12 +58,13 @@ class AppModule(private val APP_CONTEXT : Context) : AppModuleInterface
   override val externalStorageManager : ExternalStorageManager  by lazy { DefaultExternalStorageManager(APP_CONTEXT, dataStoreManager) }
   override val networkService         : NetworkService          by lazy { NetworkService() }
   override val database               : ExampleDatabase         by lazy { DatabaseFactory(APP_CONTEXT).create().build() }
+  override val nativeBridge           : NativeBridge            by lazy { NativeBridge() }
 
   private val appSettingsDataStore : DataStore<AppSettings> by lazy ()
   {
     DataStoreFactory.create(
       serializer = AppSettingsSerializer,
-      scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+      scope      = CoroutineScope(Dispatchers.IO + SupervisorJob())
     ) { APP_CONTEXT.dataStoreFile("app-settings.json") }
   }
 }

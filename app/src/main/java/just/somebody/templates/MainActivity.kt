@@ -23,11 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import just.somebody.templates.ui.theme.TemplateTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import just.somebody.pocketpixel.ui.theme.TemplateTheme
 import just.somebody.templates.presentation.effects.ObserveAsEvents
 import just.somebody.templates.presentation.screens.Destination
 import just.somebody.templates.presentation.effects.SnackbarController
@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity()
     enableEdgeToEdge()
     setContent ()
     {
-      TemplateTheme ()
+      TemplateTheme()
       {
         val snackbarHostState = remember { SnackbarHostState() }
         val snackbarScope     = rememberCoroutineScope()
@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity()
         }
 
         val soundEffectState  = remember { SnackbarHostState() }
-        val soundScope             = rememberCoroutineScope()
+        val soundScope        = rememberCoroutineScope()
         ObserveAsEvents(FLOW = SoundController.effects)
         { event ->
           soundScope.launch ()
@@ -111,7 +111,6 @@ class MainActivity : ComponentActivity()
             SoundController.play(event)
           }
         }
-
 
         Scaffold(
           modifier      = Modifier.fillMaxSize(),

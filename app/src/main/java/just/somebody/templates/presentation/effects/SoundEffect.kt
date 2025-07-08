@@ -36,7 +36,8 @@ object SoundController
     soundMap[SoundEffect.Click] = soundPool.load(App.appModule.context, R.raw.click, 1);
   }
 
-  suspend fun playSound(EFFECT: SoundEffect) { _effects.send(EFFECT) }
+  suspend fun playSound(EFFECT : SoundEffect)
+  { _effects.send(EFFECT) }
 
   fun play(EFFECT : SoundEffect)
   {
